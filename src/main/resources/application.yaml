@@ -1,4 +1,7 @@
 spring:
   application:
     name: EstudoSpring
-
+  datasource:
+    url: jdbc:mysql://localhost:3306/spring_estudo
+    username: dev
+    password: developer@315
