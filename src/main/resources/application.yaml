@@ -5,3 +5,17 @@ spring:
     url: jdbc:mysql://localhost:3306/spring_estudo
     username: dev
     password: developer@315
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# O LOGGING FICA AQUI, NO MESMO NÍVEL DO 'SPRING'
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

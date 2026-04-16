@@ -1,4 +1,4 @@
-package com.thiagocarneiro.estudo.estudospring.dto.usuario;
+package com.thiagocarneiro.estudo.estudospring.dto.user;
 
 import com.thiagocarneiro.estudo.estudospring.enums.UserRole;
 import jakarta.validation.constraints.Email;

@@ -1,4 +1,4 @@
-package com.thiagocarneiro.vendacerta.vendacerta.exception;
+package com.thiagocarneiro.estudo.estudospring.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

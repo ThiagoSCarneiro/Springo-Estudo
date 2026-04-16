@@ -1,19 +1,24 @@
 package com.thiagocarneiro.estudo.estudospring.service;
 
-import com.thiagocarneiro.estudo.estudospring.domain.User;
-import com.thiagocarneiro.estudo.estudospring.dto.usuario.UserCreateDTO;
-import com.thiagocarneiro.estudo.estudospring.dto.usuario.UserCreateGoogleDTO;
-import com.thiagocarneiro.estudo.estudospring.dto.usuario.UserResponseDTO;
-import com.thiagocarneiro.estudo.estudospring.dto.usuario.UserUpdateDTO;
+import com.thiagocarneiro.estudo.estudospring.dto.login.LoginResponseDTO;
+import com.thiagocarneiro.estudo.estudospring.dto.user.UserCreateDTO;
+import com.thiagocarneiro.estudo.estudospring.dto.user.UserCreateGoogleDTO;
+import com.thiagocarneiro.estudo.estudospring.dto.user.UserResponseDTO;
+import com.thiagocarneiro.estudo.estudospring.dto.user.UserUpdateDTO;
+import com.thiagocarneiro.estudo.estudospring.enums.UserAuthority;
 import com.thiagocarneiro.estudo.estudospring.enums.UserRole;
 import com.thiagocarneiro.estudo.estudospring.exception.BusinessException;
 import com.thiagocarneiro.estudo.estudospring.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,17 +27,19 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository repository;
+   private final PasswordEncoder encoder;
 
     @Transactional
     public UserResponseDTO saveGoogle(UserCreateGoogleDTO dto) {
-        var user = dto.toEntity(UserRole.USER_PESSOAL);
+        List<UserAuthority> authorities = new ArrayList<>(Arrays.stream(UserAuthority.values()).toList());
+        var user = dto.toEntity(UserRole.PERSONAL_USER, authorities);
         var userSave = repository.save(user);
         return new UserResponseDTO(userSave);
     }
 
     @Transactional
     public UserResponseDTO save(UserCreateDTO dto) {
-        var user = dto.toEntity(dto.password().toUpperCase());
+        var user = dto.toEntity(encoder.encode(dto.password()), UserRole.BUSINESS_USER);
         if(repository.existsByEmail(user.getEmail())) {
             throw new BusinessException("This email is already registered in our system.");
         }
@@ -53,8 +60,8 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO partialUpdate(UUID id, UserUpdateDTO dto) {
-        User user = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário com id: "+ id + "\n não localizado."));
-        User userUpdate = user.toBuilder()
+        var user = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário com id: "+ id + "\n não localizado."));
+        var userUpdate = user.toBuilder()
                 .name(dto.name() != null ? dto.name() : user.getName())
                 .email(dto.email() != null ? dto.email() : user.getEmail())
                 .password(dto.password() != null ? dto.password() : user.getPassword())
@@ -72,4 +79,8 @@ public class UserService {
     }
 
 
+    public LoginResponseDTO findByLogin(String email) {
+        var user =  repository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Email: "+ email + "\n não localizado."));
+        return new LoginResponseDTO(user);
+    }
 }

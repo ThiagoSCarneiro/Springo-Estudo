@@ -1,5 +1,6 @@
 package com.thiagocarneiro.estudo.estudospring.domain;
 
+import com.thiagocarneiro.estudo.estudospring.enums.UserAuthority;
 import com.thiagocarneiro.estudo.estudospring.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,10 +17,11 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class User implements UserDetails{
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(nullable = false)
@@ -41,34 +43,10 @@ public class User implements UserDetails{
     @Column(nullable = false)
     private UserRole role;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "authority", length = 50)
+    private List<UserAuthority> authority;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
-
-    @Override
-    public String getUsername() {
-        return "";
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
 }
