@@ -21,11 +21,11 @@ public class CostumerUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Usuário não encontrado");
         }
         var authorities = user.authority().stream()
-                .map(auth -> new SimpleGrantedAuthority(auth.name())) // 'READ', 'CREATE', etc.
+                .map(auth -> new SimpleGrantedAuthority(auth.name()))
                 .toList();
 
         return User.builder()
-                .username(user.login())
+                .username(user.email())
                 .password(user.password())
                 .authorities(authorities)
                 .build();

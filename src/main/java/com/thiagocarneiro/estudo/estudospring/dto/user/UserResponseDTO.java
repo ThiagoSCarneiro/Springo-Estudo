@@ -15,7 +15,7 @@ public record UserResponseDTO(
         String googleId,
         String avatarUrl,
         UserRole role,
-        List<UserAuthority> autority
+        List<UserAuthority> authority
 ) {
     public UserResponseDTO(User user) {
         this(

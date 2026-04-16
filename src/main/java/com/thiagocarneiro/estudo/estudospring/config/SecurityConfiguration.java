@@ -1,5 +1,6 @@
-package com.thiagocarneiro.estudo.estudospring.securiy;
+package com.thiagocarneiro.estudo.estudospring.config;
 
+import com.thiagocarneiro.estudo.estudospring.securiy.CostumerUserDetailsService;
 import com.thiagocarneiro.estudo.estudospring.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

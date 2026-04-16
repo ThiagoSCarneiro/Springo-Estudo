@@ -11,7 +11,6 @@ import com.thiagocarneiro.estudo.estudospring.exception.BusinessException;
 import com.thiagocarneiro.estudo.estudospring.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,9 +63,9 @@ public class UserService {
         var userUpdate = user.toBuilder()
                 .name(dto.name() != null ? dto.name() : user.getName())
                 .email(dto.email() != null ? dto.email() : user.getEmail())
-                .password(dto.password() != null ? dto.password() : user.getPassword())
+                .password(dto.password() != null ? encoder.encode(dto.password()) : user.getPassword())
                 .avatarUrl(dto.avatarUrl() != null ? dto.avatarUrl() : user.getAvatarUrl())
-                .role(dto.role() != null ? dto.role() : user.getRole())
+                .authority(dto.userAuthority() != null ? dto.userAuthority().stream().toList() : user.getAuthority())
                         .build();
 
                 repository.save(userUpdate);
@@ -79,8 +78,8 @@ public class UserService {
     }
 
 
-    public LoginResponseDTO findByLogin(String email) {
+    public UserResponseDTO findByLogin(String email) {
         var user =  repository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Email: "+ email + "\n não localizado."));
-        return new LoginResponseDTO(user);
+        return new UserResponseDTO(user);
     }
 }
