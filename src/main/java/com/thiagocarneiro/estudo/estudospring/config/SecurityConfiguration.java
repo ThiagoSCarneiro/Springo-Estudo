@@ -1,6 +1,7 @@
 package com.thiagocarneiro.estudo.estudospring.config;
 
 import com.thiagocarneiro.estudo.estudospring.securiy.CostumerUserDetailsService;
+import com.thiagocarneiro.estudo.estudospring.securiy.LoginSocialSuccessHandler;
 import com.thiagocarneiro.estudo.estudospring.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,13 +20,18 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, LoginSocialSuccessHandler successHandler) throws Exception {
         return http
+                .formLogin(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated()
-                ).build();
+                )
+                .oauth2Login(oauth2 ->
+                        oauth2.successHandler(successHandler)
+                        )
+                .build();
     }
 
     @Bean
@@ -33,7 +39,7 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder(12);
     }
 
-    @Bean
+
     public UserDetailsService userDetailsService(UserService userService) {
         return new CostumerUserDetailsService(userService);
     }

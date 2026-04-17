@@ -12,7 +12,7 @@ import java.util.List;
 public record UserCreateGoogleDTO(
         @NotBlank @Size(min = 3, max = 150) String name,
         @NotBlank @Email String email,
-        @NotBlank String googleId,
+        String googleId,
         String avatarUrl
 ) {
     public User toEntity(UserRole roleUser, List<UserAuthority> authorities) {

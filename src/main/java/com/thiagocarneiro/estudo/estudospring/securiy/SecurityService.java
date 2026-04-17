@@ -17,8 +17,9 @@ public class SecurityService {
 
     public UserResponseDTO getUserLogin(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String login = userDetails.getUsername();
-        return userService.findByLogin(login);
+        if(authentication instanceof CustomAuthentication customAuth){
+            return customAuth.getUser();
+        }
+        return null;
     }
 }
